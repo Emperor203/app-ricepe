@@ -8,16 +8,16 @@ import Button from '../components/Button';
 
 function Recipes() {
   const [allRecipes, setAllRecipes] = useState([]);
-  const [query, setQuery] = useState('Vegan');
-  const [searchTerm, setSearchTerm] = useState('Vegan'); // фактический запрос к API
-  const [limit, setLimit] = useState(6);
+  const [query, setQuery] = useState('');       // пустая строка для поиска
+  const [searchTerm, setSearchTerm] = useState('a'); // при входе загружаем больше карточек по букве 'a'
+  const [limit, setLimit] = useState(12);       // показываем сразу 12 карточек
   const [loading, setLoading] = useState(false);
 
   // Загрузка рецептов
   const loadRecipes = async () => {
     setLoading(true);
     try {
-      const data = await fetchRecipes(searchTerm); // используем searchTerm, а не query
+      const data = await fetchRecipes(searchTerm);
       setAllRecipes(data || []);
     } catch (err) {
       console.error(err);
@@ -27,18 +27,19 @@ function Recipes() {
     }
   };
 
-  // Show more
-  const showMore = () => setLimit(prev => prev + 6);
+  // Подгрузка дополнительных карточек
+  const showMore = () => setLimit(prev => prev + 12);
 
-  // Поиск по кнопке или Enter
+  // Обработка поиска
   const handleSearch = () => {
-    setLimit(6);          // сброс лимита
-    setSearchTerm(query); // обновляем фактический запрос
+    if (!query) return;          // ничего не делать если пустой ввод
+    setLimit(12);                // сброс лимита
+    setSearchTerm(query);        // обновляем запрос
   };
 
   useEffect(() => {
     loadRecipes();
-  }, [searchTerm]); // вызываем API только когда searchTerm меняется
+  }, [searchTerm]);
 
   const displayedRecipes = allRecipes.slice(0, limit);
 
